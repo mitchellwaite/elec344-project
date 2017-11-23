@@ -6,7 +6,7 @@
 #include "volume2.h"
 Volume vol;
 
-unsigned int toneArr[] = { SQUARE, PWM_12, PWM_25, SAWTOOTH_HIGH, TRIANGLE_HIGH, SINE_HIGH, CUSTOM, NOISE };
+unsigned int toneArr[] = { PWM_12, PWM_12, SAWTOOTH, SAWTOOTH, TRIANGLE, TRIANGLE, SINE, SINE };
 
 void setup() {
   Serial.begin(9600);
@@ -32,8 +32,8 @@ void loop() {
   int zVoltage = analogRead(ZPIN);
   int p1 = analogRead(POT1);
   int p2 = analogRead(POT2);
-
-  delay(100);
+  int p1_1 = map(p1, 0, 512, 233, 466);
+  //delay(100);
 
   if(xVoltage > 337)
     toneChoice |= 1;
@@ -44,8 +44,15 @@ void loop() {
   if(zVoltage > 337)
     toneChoice |= 4;
 
-  vol.tone(440, toneArr[toneChoice], 64);
+  if(p1_1 < 512)
+  {
+    vol.tone(p1_1, toneArr[toneChoice], 64);
+  }
+  else
+  {
+    vol.noTone();
+  }
   
   Serial.println(p1);
-  Serial.println(p2);
+  //Serial.println(p2);
 }
