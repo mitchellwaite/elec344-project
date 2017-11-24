@@ -14,13 +14,8 @@ void setup() {
   pinMode(XPIN,INPUT);
   pinMode(YPIN,INPUT);
   pinMode(ZPIN,INPUT);
-  byte wave[32] = {
-    255,255,192,192,192,192,128,128,
-    192,192,128,128,128,128,64,64,
-    192,192,128,128,128,128,64,64,
-    128,128,64,64,64,64,0,0,
-  };
-  vol.setCustomWave(wave);
+  pinMode(POT1,INPUT);
+  pinMode(POT2,INPUT);
 }
 
 void loop() {
@@ -33,26 +28,67 @@ void loop() {
   int p1 = analogRead(POT1);
   int p2 = analogRead(POT2);
   int p1_1 = map(p1, 0, 512, 233, 466);
+  int noteChoice = 0;
   //delay(100);
 
-  if(xVoltage > 337)
-    toneChoice |= 1;
-
-  if(yVoltage > 337)
-    toneChoice |= 2;
-
-  if(zVoltage > 337)
-    toneChoice |= 4;
-
-  if(p1_1 < 512)
+  if(p1 < 128)
   {
-    vol.tone(p1_1, toneArr[toneChoice], 64);
+    noteChoice = 262;
+  }
+  else if(p1 < 256)
+  {
+    noteChoice = 294;
+  }
+  else if(p1 < 384)
+  {
+    noteChoice = 330;
+  }
+  else if(p1 < 512)
+  {
+    noteChoice = 349; 
+  }
+  else if(p2 < 128)
+  {
+    noteChoice = 392;
+  }
+  else if(p2 < 256)
+  {
+    noteChoice = 440;
+  }
+  else if(p2 < 384)
+  {
+    noteChoice = 494;
+  }
+  else if(p2 < 512)
+  {
+    noteChoice = 523; 
+  }
+  else
+  {
+    noteChoice = 0;
+  }
+
+  //Check le accelerometer
+  int noteAdj = map(zVoltage,300,400,0,100);
+
+  if(noteChoice)
+  {
+     vol.tone(noteChoice + noteAdj,SAWTOOTH,128);
   }
   else
   {
     vol.noTone();
   }
-  
-  Serial.println(p1);
-  //Serial.println(p2);
+ 
+
+  Serial.print(p1);
+  Serial.print(',');
+  Serial.print(p2);
+  Serial.print(',');
+  Serial.print(xVoltage);
+  Serial.print(',');
+  Serial.print(yVoltage);
+  Serial.print(',');
+  Serial.print(zVoltage);
+  Serial.print('\n');
 }
