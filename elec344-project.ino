@@ -1,12 +1,14 @@
+#include <EEPROM.h>
+#include "volume2.h"
+
 #define XPIN A0
 #define YPIN A1
 #define ZPIN A2
 #define POT1 A4
 #define POT2 A5
-#include "volume2.h"
 Volume vol;
 
-byte toneArr[] = { PWM_12, PWM_12, SAWTOOTH, SAWTOOTH, TRIANGLE, TRIANGLE, SINE, SINE };
+byte toneArr[] = { SQUARE, SAWTOOTH, TRIANGLE, SINE, PWM_12, PWM_25, NOISE };
 byte toneChoice;
 
 void setup() {
@@ -18,8 +20,11 @@ void setup() {
   pinMode(ZPIN,INPUT);
   pinMode(POT1,INPUT);
   pinMode(POT2,INPUT);
-
-  toneChoice = toneArr[random(8)];
+//6 = NOISE
+  byte eepromVal = EEPROM.read(0);
+  toneChoice = toneArr[eepromVal];
+  eepromVal = (eepromVal + 1) % 7;
+  EEPROM.update(0,eepromVal);
   
 }
 
@@ -110,6 +115,6 @@ void loop() {
   Serial.print(',');
   Serial.print(zVoltage);
   Serial.print(',');
-  Serial.print(toneArr[random(8)]);  
+  Serial.print(toneChoice);  
   Serial.print('\n');
 }
