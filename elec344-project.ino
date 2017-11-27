@@ -6,21 +6,25 @@
 #include "volume2.h"
 Volume vol;
 
-unsigned int toneArr[] = { PWM_12, PWM_12, SAWTOOTH, SAWTOOTH, TRIANGLE, TRIANGLE, SINE, SINE };
+byte toneArr[] = { PWM_12, PWM_12, SAWTOOTH, SAWTOOTH, TRIANGLE, TRIANGLE, SINE, SINE };
+byte toneChoice;
 
 void setup() {
   Serial.begin(9600);
+  randomSeed(analogRead(A3));
   // put your setup code here, to run once:
   pinMode(XPIN,INPUT);
   pinMode(YPIN,INPUT);
   pinMode(ZPIN,INPUT);
   pinMode(POT1,INPUT);
   pinMode(POT2,INPUT);
+
+  toneChoice = toneArr[random(8)];
+  
 }
 
 void loop() {
   // put your main code here, to run repeatedly
-  int toneChoice = 0;
   
   int xVoltage = analogRead(XPIN);
   int yVoltage = analogRead(YPIN);
@@ -31,37 +35,52 @@ void loop() {
   int noteChoice = 0;
   //delay(100);
 
-  if(p1 < 128)
+
+
+  if(p2 < 128)
   {
-    noteChoice = 262;
-  }
-  else if(p1 < 256)
-  {
-    noteChoice = 294;
-  }
-  else if(p1 < 384)
-  {
-    noteChoice = 330;
-  }
-  else if(p1 < 512)
-  {
-    noteChoice = 349; 
-  }
-  else if(p2 < 128)
-  {
-    noteChoice = 392;
+    if(p1 < 10)
+    {
+      noteChoice = 392;
+    }
+    else
+    {
+      noteChoice = 262;
+    }
   }
   else if(p2 < 256)
   {
-    noteChoice = 440;
+    if(p1 > 10)
+    {
+      noteChoice = 294;
+    }
+    else
+    {
+      noteChoice = 440;
+    } 
   }
   else if(p2 < 384)
   {
-    noteChoice = 494;
+    if(p1 > 10)
+    {
+       noteChoice = 330;
+    }
+    else{
+      noteChoice = 494;
+    }
+    
   }
   else if(p2 < 512)
   {
-    noteChoice = 523; 
+    if(p1 > 10)
+    {
+      noteChoice = 349;
+    }
+    else
+    {
+      noteChoice = 523; 
+    }
+    
   }
   else
   {
@@ -73,7 +92,7 @@ void loop() {
 
   if(noteChoice)
   {
-     vol.tone(noteChoice + noteAdj,SAWTOOTH,128);
+     vol.tone(noteChoice + noteAdj,toneChoice,128);
   }
   else
   {
@@ -90,5 +109,7 @@ void loop() {
   Serial.print(yVoltage);
   Serial.print(',');
   Serial.print(zVoltage);
+  Serial.print(',');
+  Serial.print(toneArr[random(8)]);  
   Serial.print('\n');
 }
